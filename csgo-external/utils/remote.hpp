@@ -6,23 +6,23 @@ namespace remote
 {
 	auto attach_process(const fnv::hash name) -> void;
 	auto detach_process() -> void;
-	auto raw_read(std::uintptr_t dest, void* src, std::size_t size) -> void;
-	auto raw_write(std::uintptr_t dest, void* src, std::size_t size) -> void;
+	auto raw_read(const std::uintptr_t dest, void* src, const std::size_t size) -> void;
+	auto raw_write(const std::uintptr_t dest, const void* src, const std::size_t size) -> void;
 	auto read_data(void* dest, void* src, std::size_t size) -> void;
 	auto write_data(void* dest, void* src, std::size_t size) -> void;
 	auto find_module_by_name(const fnv::hash name) -> std::pair<std::uintptr_t, std::size_t>;
-	auto find_pattern(const fnv::hash module_name, const char* pattern) -> std::uintptr_t;
+	auto find_pattern(const std::pair<std::uintptr_t, std::size_t> mod, const char* pattern) -> std::uintptr_t;
 
 	template <typename T>
-	auto read(std::uintptr_t src) -> T
+	auto read(const std::uintptr_t src) -> T
 	{
 		T v;
-		raw_read(&v, src, sizeof(v));
+		raw_read(src, &v, sizeof(v));
 		return v;
 	}
 
 	template <typename T>
-	auto write(std::uintptr_t dst, const T& v) -> void
+	auto write(const std::uintptr_t dst, const T& v) -> void
 	{
 		raw_write(dst, &v, sizeof(T));
 	}

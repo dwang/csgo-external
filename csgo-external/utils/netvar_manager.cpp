@@ -1,4 +1,5 @@
 #include "netvar_manager.hpp"
+#include "offsets.hpp"
 #include <array>
 #include <cctype>
 
@@ -77,7 +78,7 @@ IF_DUMPING(static FILE* s_fp;)
 
 netvar_manager::netvar_manager()
 {
-	auto sig = remote::find_pattern(FNV("client_panorama.dll"), "A1 ? ? ? ? 8B ? 0C 85 C0 74 18");
+	auto sig = remote::find_pattern(offsets::get().client_dll, "A1 ? ? ? ? 8B ? 0C 85 C0 74 18");
 	auto headclass_ppp = reinterpret_cast<void*>(sig + 1);
 	auto headclass_pp = remote::read<void*>(headclass_ppp);
 	auto headclass_p = remote::read<remote::variable<sdk::ClientClass>*>(headclass_pp);

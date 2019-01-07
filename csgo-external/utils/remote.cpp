@@ -158,7 +158,7 @@ namespace remote
 		NtClose(s_attached_process);
 	}
 
-	auto raw_read(std::uintptr_t address, void* buffer, std::size_t size) -> void
+	auto raw_read(const std::uintptr_t address, void* buffer, const std::size_t size) -> void
 	{
 		NtReadVirtualMemory(s_attached_process,
 			reinterpret_cast<void*>(address),
@@ -168,11 +168,11 @@ namespace remote
 		);
 	}
 
-	auto raw_write(std::uintptr_t address, void* buffer, std::size_t size) -> void
+	auto raw_write(const std::uintptr_t address, const void* buffer, std::size_t size) -> void
 	{
 		NtWriteVirtualMemory(s_attached_process,
 			reinterpret_cast<void*>(address),
-			buffer,
+			const_cast<void*>(buffer),
 			size,
 			nullptr
 		);
@@ -282,10 +282,8 @@ namespace remote
 		return { 0, 0 };
 	}
 
-	auto find_pattern(const fnv::hash module_name, const char *pattern) -> std::uintptr_t
+	auto find_pattern(const std::pair<std::uintptr_t, std::size_t> mod, const char *pattern) -> std::uintptr_t
 	{
-		auto mod = find_module_by_name(module_name);
-
 		static auto compare_bytes = [](const byte *bytes, const char *pattern) -> bool
 		{
 			for (; *pattern; *pattern != ' ' ? ++bytes : bytes, ++pattern)

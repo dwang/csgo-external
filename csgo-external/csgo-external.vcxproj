@@ -75,14 +75,23 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="features\misc.hpp" />
+    <ClInclude Include="sdk\engine.hpp" />
+    <ClInclude Include="sdk\entity.hpp" />
     <ClInclude Include="utils\fnv.hpp" />
     <ClInclude Include="utils\memutils.hpp" />
     <ClInclude Include="utils\netvar_manager.hpp" />
+    <ClInclude Include="utils\offsets.hpp" />
     <ClInclude Include="utils\remote.hpp" />
+    <ClInclude Include="utils\singleton.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="features\misc.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="sdk\engine.cpp" />
+    <ClCompile Include="sdk\entity.cpp" />
     <ClCompile Include="utils\netvar_manager.cpp" />
+    <ClCompile Include="utils\offsets.cpp" />
     <ClCompile Include="utils\remote.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
