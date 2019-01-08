@@ -10,7 +10,7 @@ namespace remote
 	auto raw_write(const std::uintptr_t dest, const void* src, const std::size_t size) -> void;
 	auto read_data(void* dest, void* src, std::size_t size) -> void;
 	auto write_data(void* dest, void* src, std::size_t size) -> void;
-	auto find_module_by_name(const fnv::hash name) -> std::pair<std::uintptr_t, std::size_t>;
+	auto find_module(const fnv::hash name) -> std::pair<std::uintptr_t, std::size_t>;
 	auto find_pattern(const std::pair<std::uintptr_t, std::size_t> mod, const char* pattern) -> std::uintptr_t;
 
 	template <typename T>
@@ -62,4 +62,3 @@ namespace remote
 		T remote_value;
 	};
 }
-

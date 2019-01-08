@@ -76,8 +76,10 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="features\misc.hpp" />
+    <ClInclude Include="features\visuals.hpp" />
     <ClInclude Include="sdk\engine.hpp" />
     <ClInclude Include="sdk\entity.hpp" />
+    <ClInclude Include="utils\color.hpp" />
     <ClInclude Include="utils\fnv.hpp" />
     <ClInclude Include="utils\memutils.hpp" />
     <ClInclude Include="utils\netvar_manager.hpp" />
@@ -87,6 +89,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="features\misc.cpp" />
+    <ClCompile Include="features\visuals.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="sdk\engine.cpp" />
     <ClCompile Include="sdk\entity.cpp" />

@@ -78,22 +78,18 @@ IF_DUMPING(static FILE* s_fp;)
 
 netvar_manager::netvar_manager()
 {
-	auto sig = remote::find_pattern(offsets::get().client_dll, "A1 ? ? ? ? 8B ? 0C 85 C0 74 18");
-	auto headclass_ppp = reinterpret_cast<void*>(sig + 1);
-	auto headclass_pp = remote::read<void*>(headclass_ppp);
-	auto headclass_p = remote::read<remote::variable<sdk::ClientClass>*>(headclass_pp);
+	auto headclass = remote::read<remote::variable<sdk::ClientClass>*>(offsets::get().dwGetAllClasses);
 
 	IF_DUMPING(fopen_s(&s_fp, "netvar_dump.txt", "w");)
-		for (auto it = headclass_p; it; it = it->get().m_pNext)
+	for (auto it = headclass; it; it = it->get().m_pNext)
+	{
+		auto clazz = it->get();
+		if (clazz.m_pRecvTable)
 		{
-			auto clazz = it->get();
-			if (clazz.m_pRecvTable)
-			{
-				auto net_name = clazz.m_pNetworkName->get();
-				dump_recursive(net_name.data(), clazz.m_pRecvTable, 0);
-			}
+			auto net_name = clazz.m_pNetworkName->get();
+			dump_recursive(net_name.data(), clazz.m_pRecvTable, 0);
 		}
-
+	}
 	IF_DUMPING(fclose(s_fp);)
 }
 

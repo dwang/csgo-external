@@ -9,11 +9,11 @@
 #include <Windows.h>
 #include <winternl.h>
 
-#pragma comment(lib, "ntdll.lib")
-
 #define IN_RANGE(x, a, b) (x >= a && x <= b)
 #define GET_BITS(x) (IN_RANGE(x, '0', '9') ? (x - '0') : ((x & (~0x20)) - 'A' + 0xa))
 #define GET_BYTE(x) (GET_BITS(x[0]) << 4 | GET_BITS(x[1]))
+
+#pragma comment(lib, "ntdll.lib")
 
 EXTERN_C NTSYSAPI
 NTSTATUS NTAPI NtReadVirtualMemory(
@@ -88,10 +88,10 @@ typedef struct x_PEB_LDR_DATA
 
 namespace remote
 {
-	static auto s_attached_process = INVALID_HANDLE_VALUE;
+	static auto handle = INVALID_HANDLE_VALUE;
 
 	__declspec(noinline)
-	static auto get_process_id_by_image_name(const fnv::hash name) -> HANDLE
+	static auto get_process_id(const fnv::hash name) -> HANDLE
 	{
 		auto len = ULONG(0);
 		NtQuerySystemInformation(SystemProcessInformation, nullptr, 0, &len);
@@ -128,7 +128,7 @@ namespace remote
 
 	auto attach_process(const fnv::hash name) -> void
 	{
-		const auto pid = get_process_id_by_image_name(name);
+		const auto pid = get_process_id(name);
 
 		constexpr auto access = PROCESS_ALL_ACCESS;
 
@@ -144,80 +144,53 @@ namespace remote
 			nullptr,
 			nullptr);
 
-		auto ret = NtOpenProcess(
-			&s_attached_process,
-			access,
-			&attr,
-			&client_id);
-
+		auto ret = NtOpenProcess(&handle, access, &attr, &client_id);
 		assert(NT_SUCCESS(ret));
 	}
 
 	auto detach_process() -> void
 	{
-		NtClose(s_attached_process);
+		NtClose(handle);
 	}
 
-	auto raw_read(const std::uintptr_t address, void* buffer, const std::size_t size) -> void
+	auto raw_read(const std::uintptr_t dest, void* src, const std::size_t size) -> void
 	{
-		NtReadVirtualMemory(s_attached_process,
-			reinterpret_cast<void*>(address),
-			buffer,
-			size,
-			nullptr
-		);
+		NtReadVirtualMemory(handle, reinterpret_cast<void*>(dest), src, size, nullptr);
 	}
 
-	auto raw_write(const std::uintptr_t address, const void* buffer, std::size_t size) -> void
+	auto raw_write(const std::uintptr_t dest, const void* src, const std::size_t size) -> void
 	{
-		NtWriteVirtualMemory(s_attached_process,
-			reinterpret_cast<void*>(address),
-			const_cast<void*>(buffer),
-			size,
-			nullptr
-		);
+		NtWriteVirtualMemory(handle, reinterpret_cast<void*>(dest), const_cast<void*>(src), size, nullptr);
 	}
 
 	auto read_data(void* dest, void* src, const std::size_t size) -> void
 	{
-		NtReadVirtualMemory(s_attached_process,
-			src,
-			dest,
-			size,
-			nullptr
-		);
+		NtReadVirtualMemory(handle, src, dest, size, nullptr);
 	}
 
 	auto write_data(void* dest, void* src, const std::size_t size) -> void
 	{
-		NtWriteVirtualMemory(s_attached_process,
-			dest,
-			src,
-			size,
-			nullptr
-		);
+		NtWriteVirtualMemory(handle, dest, src, size, nullptr);
 	}
 
-	auto find_module_by_name(const fnv::hash name) -> std::pair<std::uintptr_t, std::size_t>
+	auto find_module(const fnv::hash name) -> std::pair<std::uintptr_t, std::size_t>
 	{
 		PROCESS_BASIC_INFORMATION basic_information;
-		auto ret = NtQueryInformationProcess(s_attached_process,
+		auto ret = NtQueryInformationProcess(handle,
 			ProcessBasicInformation,
 			&basic_information,
 			sizeof(basic_information),
 			nullptr);
-
 		assert(NT_SUCCESS(ret));
 		if (!NT_SUCCESS(ret))
 			return { 0, 0 };
 
 		xPPEB_LDR_DATA loader_data;
-		ret = NtReadVirtualMemory(s_attached_process,
+		ret = NtReadVirtualMemory(handle,
 			&(basic_information.PebBaseAddress->Ldr),
 			&loader_data,
 			sizeof(loader_data),
 			nullptr);
-
 		assert(NT_SUCCESS(ret));
 		if (!NT_SUCCESS(ret))
 			return { 0, 0 };
@@ -225,7 +198,7 @@ namespace remote
 		const auto list_head = &loader_data->InLoadOrderModuleList;
 
 		PLIST_ENTRY current;
-		ret = NtReadVirtualMemory(s_attached_process,
+		ret = NtReadVirtualMemory(handle,
 			&(loader_data->InLoadOrderModuleList.Flink),
 			&current,
 			sizeof(current),
@@ -237,22 +210,25 @@ namespace remote
 		while (current != list_head)
 		{
 			xLDR_DATA_TABLE_ENTRY loader_module;
-			ret = NtReadVirtualMemory(s_attached_process,
+			ret = NtReadVirtualMemory(handle,
 				CONTAINING_RECORD(current, xLDR_DATA_TABLE_ENTRY, InLoadOrderLinks),
 				&loader_module,
 				sizeof(loader_module),
 				nullptr);
-
 			assert(NT_SUCCESS(ret));
 			if (!NT_SUCCESS(ret))
 				return { 0, 0 };
 
 			wchar_t image_name_wide[MAX_PATH + 1];
-			ret = NtReadVirtualMemory(s_attached_process,
+			ret = NtReadVirtualMemory(handle,
 				loader_module.BaseDllName.Buffer,
 				image_name_wide,
 				max(sizeof(image_name_wide), loader_module.BaseDllName.MaximumLength),
 				nullptr);
+			assert(NT_SUCCESS(ret));
+			if (!NT_SUCCESS(ret))
+				return { 0, 0 };
+
 			loader_module.BaseDllName.Buffer = image_name_wide;
 
 			char image_name[MAX_PATH + 1];
@@ -282,9 +258,9 @@ namespace remote
 		return { 0, 0 };
 	}
 
-	auto find_pattern(const std::pair<std::uintptr_t, std::size_t> mod, const char *pattern) -> std::uintptr_t
+	auto find_pattern(std::pair<std::uintptr_t, std::size_t> mod, const char* pattern) -> std::uintptr_t
 	{
-		static auto compare_bytes = [](const byte *bytes, const char *pattern) -> bool
+		static auto compare_bytes = [](const byte* bytes, const char* pattern) -> bool
 		{
 			for (; *pattern; *pattern != ' ' ? ++bytes : bytes, ++pattern)
 			{
@@ -300,31 +276,31 @@ namespace remote
 			return true;
 		};
 
-		auto get_text_section = [&](std::uintptr_t &start, std::size_t &size)
+		auto get_text_section = [&](std::uintptr_t& start, std::size_t& size)
 		{
-			auto header = (byte*)malloc(0x1000);
+			auto header = reinterpret_cast<byte*>(malloc(0x1000));
 			raw_read(mod.first, header, 0x1000);
 
-			auto pDosHdr = (const IMAGE_DOS_HEADER *)(header);
+			auto pDosHdr = reinterpret_cast<const IMAGE_DOS_HEADER*>(header);
 			if (pDosHdr->e_magic != IMAGE_DOS_SIGNATURE)
 			{
 				::free(header);
 				return false;
 			}
 
-			const IMAGE_NT_HEADERS *pImageHdr = (const IMAGE_NT_HEADERS *)((uint8_t *)pDosHdr + pDosHdr->e_lfanew);
+			const IMAGE_NT_HEADERS* pImageHdr = reinterpret_cast<const IMAGE_NT_HEADERS*>(reinterpret_cast<uint8_t*>(const_cast<IMAGE_DOS_HEADER*>(pDosHdr)) + pDosHdr->e_lfanew);
 			if (pImageHdr->Signature != IMAGE_NT_SIGNATURE)
 			{
 				::free(header);
 				return false;
 			}
 
-			auto pSection = (const IMAGE_SECTION_HEADER*)((uint8_t*)pImageHdr + sizeof(IMAGE_NT_HEADERS));
+			auto pSection = reinterpret_cast<const IMAGE_SECTION_HEADER*>(reinterpret_cast<uint8_t*>(const_cast<IMAGE_NT_HEADERS*>(pImageHdr)) + sizeof(IMAGE_NT_HEADERS));
 			for (int i = 0; i < pImageHdr->FileHeader.NumberOfSections; ++i, pSection++)
 			{
-				if (_stricmp((LPCSTR)pSection->Name, ".text") == 0)
+				if (_stricmp(reinterpret_cast<LPCSTR>(pSection->Name), ".text") == 0)
 				{
-					start = (std::uintptr_t)(mod.first + pSection->VirtualAddress);
+					start = static_cast<std::uintptr_t>(mod.first + pSection->VirtualAddress);
 					size = pSection->Misc.VirtualSize;
 					::free(header);
 					return true;
@@ -343,7 +319,7 @@ namespace remote
 			size = mod.second;
 		}
 
-		auto pb = (byte *)malloc(size);
+		auto pb = reinterpret_cast<byte*>(malloc(size));
 		raw_read(base, pb, size);
 
 		std::uintptr_t offset = 0;

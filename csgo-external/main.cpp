@@ -1,3 +1,4 @@
+#include "features/visuals.hpp"
 #include "features/misc.hpp"
 #include "sdk/entity.hpp"
 #include "sdk/engine.hpp"
@@ -28,13 +29,26 @@ auto update_entities() -> void
 	}
 }
 
+auto visuals() -> void
+{
+	while (true)
+	{
+		if (engine::is_in_game())
+		{
+			visuals::get().glow();
+		}
+
+		std::this_thread::sleep_for(std::chrono::milliseconds(1));
+	}
+}
+
 auto misc() -> void
 {
 	while (true)
 	{
 		if (engine::is_in_game())
 		{
-			if (misc::get().bunnyhop_enabled && local.is_alive())
+			if (local.is_alive())
 				misc::get().bunnyhop();
 		}
 
@@ -55,7 +69,7 @@ auto main() -> int
 
 	std::cout << "> waiting for modules" << std::endl << std::endl;
 
-	while (!remote::find_module_by_name(FNV("serverbrowser.dll")).first)
+	while (!remote::find_module(FNV("serverbrowser.dll")).first)
 		std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
 	std::cout << "> scanning signatures" << std::endl << std::endl;
@@ -65,9 +79,11 @@ auto main() -> int
 	std::cout << "> settings up threads" << std::endl << std::endl;
 
 	std::thread t_update(update_entities);
+	std::thread t_visuals(visuals);
 	std::thread t_misc(misc);
 
 	t_update.detach();
+	t_visuals.detach();
 	t_misc.detach();
 
 	std::cout << "> success" << std::endl;	

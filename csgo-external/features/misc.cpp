@@ -6,7 +6,7 @@
 
 auto misc::force_jump() -> void
 {
-	remote::write<int>(offsets::get().client_dll.first + offsets::get().m_dwForceJump, 6);
+	remote::write<int>(offsets::get().client_dll.first + offsets::get().dwForceJump, 6);
 }
 
 auto misc::bunnyhop() -> void
