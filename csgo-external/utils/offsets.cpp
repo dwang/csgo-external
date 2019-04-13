@@ -50,10 +50,10 @@ auto offsets::setup() -> void
 		"    dwGetAllClasses:              0x%x\n"
 		"    m_iGlowIndex:                 0x%x\n"
 		"[*] netvars:\n"
-		"   CBaseEntity->m_iTeamNum:       0x%x\n"
-		"   CBasePlayer->m_fFlags:         0x%x\n"
-		"   CBasePlayer->m_iHealth:        0x%x\n"
-		"   CCSPlayer->m_flFlashDuration:  0x%x\n\n"
+		"    CBaseEntity->m_iTeamNum:      0x%x\n"
+		"    CBasePlayer->m_fFlags:        0x%x\n"
+		"    CBasePlayer->m_iHealth:       0x%x\n"
+		"    CCSPlayer->m_flFlashDuration: 0x%x\n\n"
 		,
 		client_dll.first,
 		engine_dll.first,
