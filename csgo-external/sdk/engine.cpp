@@ -2,23 +2,35 @@
 #include "../utils/offsets.hpp"
 #include "../utils/remote.hpp"
 
+auto engine::update() -> void
+{
+	if (!base)
+		base = remote::read<std::uintptr_t>(offsets::get().engine_dll.first + offsets::get().dwClientState);
+
+	remote::raw_read(base, chunk, sizeof(chunk));
+	sigon_state = *reinterpret_cast<int*>(chunk + offsets::get().dwClientState_State);
+	max_clients = *reinterpret_cast<int*>(chunk + offsets::get().dwClientState_MaxPlayer);
+	local_player = *reinterpret_cast<int*>(chunk + offsets::get().dwClientState_GetLocalPlayer);
+}
+
+auto engine::get_pointer() -> std::uintptr_t
+{
+	return base;
+}
+
 auto engine::is_in_game() -> bool
 {
-	auto client_state = remote::read<std::uintptr_t>(offsets::get().engine_dll.first + offsets::get().dwClientState);
-	int sigon_state = remote::read<int>(client_state + offsets::get().dwClientState_State);
-	return (sigon_state == 6);
+	return sigon_state == 6;
 }
 
 auto engine::get_max_clients() -> int
 {
-	auto client_state = remote::read<std::uintptr_t>(offsets::get().engine_dll.first + offsets::get().dwClientState);
-	return remote::read<int>(client_state + offsets::get().dwClientState_MaxPlayer);
+	return max_clients;
 }
 
 auto engine::get_local_player() -> int
 {
-	auto client_state = remote::read<std::uintptr_t>(offsets::get().engine_dll.first + offsets::get().dwClientState);
-	return remote::read<int>(client_state + offsets::get().dwClientState_GetLocalPlayer);
+	return local_player;
 }
 
 auto entity::get_client_entity(int index) -> entity_t

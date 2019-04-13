@@ -9,13 +9,15 @@
 #include <thread>
 #include <Windows.h>
 
-auto update_entities() -> void
+auto update() -> void
 {
 	while (true)
 	{
-		if (engine::is_in_game())
+		engine::get().update();
+
+		if (engine::get().is_in_game())
 		{
-			local = entity::get_client_entity(engine::get_local_player());
+			local = entity::get_client_entity(engine::get().get_local_player());
 			local.update();
 				
 			for (int i = 0; i < 64; ++i)
@@ -33,7 +35,7 @@ auto visuals() -> void
 {
 	while (true)
 	{
-		if (engine::is_in_game())
+		if (engine::get().is_in_game())
 		{
 			visuals::get().glow();
 		}
@@ -46,7 +48,7 @@ auto misc() -> void
 {
 	while (true)
 	{
-		if (engine::is_in_game())
+		if (engine::get().is_in_game())
 		{
 			if (local.is_alive())
 				misc::get().bunnyhop();
@@ -78,7 +80,7 @@ auto main() -> int
 
 	std::cout << "> settings up threads" << std::endl << std::endl;
 
-	std::thread t_update(update_entities);
+	std::thread t_update(update);
 	std::thread t_visuals(visuals);
 	std::thread t_misc(misc);
 
