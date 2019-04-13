@@ -12,6 +12,7 @@ class engine : public singleton<engine>
 	int sigon_state;
 	int local_player;
 	int max_clients;
+	bool window_focused;
 
 public:
 	auto update() -> void;
@@ -19,6 +20,8 @@ public:
 	auto get_local_player() -> int;
 	auto get_max_clients() -> int;
 	auto is_in_game() -> bool;
+	auto is_window_focused() -> bool;
+	auto set_window_focused(bool focused) -> void;
 };
 
 namespace entity

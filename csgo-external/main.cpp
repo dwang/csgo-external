@@ -13,17 +13,20 @@ auto update() -> void
 {
 	while (true)
 	{
-		engine::get().update();
-
-		if (engine::get().is_in_game())
+		if (engine::get().is_window_focused())
 		{
-			local = entity::get_client_entity(engine::get().get_local_player());
-			local.update();
-				
-			for (int i = 0; i < 64; ++i)
+			engine::get().update();
+
+			if (engine::get().is_in_game())
 			{
-				entities[i] = entity::get_client_entity(i);
-				entities[i].update();
+				local = entity::get_client_entity(engine::get().get_local_player());
+				local.update();
+
+				for (int i = 0; i < 64; ++i)
+				{
+					entities[i] = entity::get_client_entity(i);
+					entities[i].update();
+				}
 			}
 		}
 
@@ -35,7 +38,7 @@ auto visuals() -> void
 {
 	while (true)
 	{
-		if (engine::get().is_in_game())
+		if (engine::get().is_in_game() && engine::get().is_window_focused())
 		{
 			visuals::get().glow();
 		}
@@ -48,7 +51,7 @@ auto misc() -> void
 {
 	while (true)
 	{
-		if (engine::get().is_in_game())
+		if (engine::get().is_in_game() && engine::get().is_window_focused())
 		{
 			if (local.is_alive())
 				misc::get().bunnyhop();
@@ -92,6 +95,8 @@ auto main() -> int
 
 	while (true)
 	{
+		engine::get().set_window_focused(FindWindow(NULL, "Counter-Strike: Global Offensive") == GetForegroundWindow());
+
 		if (GetAsyncKeyState(VK_END) & 0x8000 || !FindWindow(NULL, "Counter-Strike: Global Offensive"))
 		{
 			std::this_thread::sleep_for(std::chrono::milliseconds(100));

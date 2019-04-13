@@ -33,6 +33,16 @@ auto engine::get_local_player() -> int
 	return local_player;
 }
 
+auto engine::is_window_focused() -> bool
+{
+	return window_focused;
+}
+
+auto engine::set_window_focused(bool focused) -> void
+{
+	window_focused = focused;
+}
+
 auto entity::get_client_entity(int index) -> entity_t
 {
 	return remote::read<entity_t>(offsets::get().client_dll.first + offsets::get().dwEntityList + index * 0x10);
