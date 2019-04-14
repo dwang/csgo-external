@@ -24,7 +24,7 @@ auto update() -> void
 				local = entity::get_client_entity(engine::get().get_local_player());
 				local.update();
 
-				for (int i = 0; i < 64; ++i)
+				for (int i = 0; i < engine::get().get_max_clients(); i++)
 				{
 					entities[i] = entity::get_client_entity(i);
 					entities[i].update();
