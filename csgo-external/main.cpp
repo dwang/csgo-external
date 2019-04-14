@@ -65,7 +65,7 @@ auto misc() -> void
 
 auto main() -> int
 {
-	std::cout << "csgo-external" << std::endl << std::endl;
+	std::cout << "csgo-external - " __DATE__ << std::endl << std::endl;
 
 	std::cout << "> waiting for \"csgo.exe\"" << std::endl << std::endl;
 
