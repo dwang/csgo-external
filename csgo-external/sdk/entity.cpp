@@ -62,11 +62,3 @@ auto entity_t::is_valid() -> bool
 {
 	return base && is_alive() && !is_dormant();
 }
-
-auto entity_t::get_class_id() -> int
-{
-	std::uintptr_t vtable = remote::read<std::uintptr_t>(base + 0x8); // IClientNetworkable
-	std::uintptr_t fn = remote::read<std::uintptr_t>(vtable + 0x8); // 4 bytes per fn, 2nd index
-	std::uintptr_t ptr = remote::read<std::uintptr_t>(fn + 0x1); // mov eax, ptr_to_client_class
-	return remote::read<int>(ptr + 0x14);
-}

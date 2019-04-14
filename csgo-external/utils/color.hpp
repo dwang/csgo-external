@@ -1,6 +1,7 @@
 #pragma once
 
-struct color {
+struct color
+{
 	float r;
 	float g;
 	float b;
@@ -10,7 +11,8 @@ struct color {
 	{
 	}
 
-	color(float red, float green, float blue, float alpha) {
+	color(float red, float green, float blue, float alpha)
+	{
 		r = red;
 		g = green;
 		b = blue;

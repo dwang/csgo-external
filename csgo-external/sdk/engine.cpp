@@ -8,6 +8,7 @@ auto engine::update() -> void
 		base = remote::read<std::uintptr_t>(offsets::get().engine_dll.first + offsets::get().dwClientState);
 
 	remote::raw_read(base, chunk, sizeof(chunk));
+
 	sigon_state = *reinterpret_cast<int*>(chunk + offsets::get().dwClientState_State);
 	max_clients = *reinterpret_cast<int*>(chunk + offsets::get().dwClientState_MaxPlayer);
 	local_player = *reinterpret_cast<int*>(chunk + offsets::get().dwClientState_GetLocalPlayer);

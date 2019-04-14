@@ -22,7 +22,6 @@ public:
 	auto get_glow_index() -> int;
 	auto get_health() -> int;
 	auto get_team() -> int;
-	auto get_class_id() -> int;
 	auto is_on_ground() -> bool;
 	auto is_alive() -> bool;
 	auto is_dormant() -> bool;

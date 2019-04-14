@@ -9,6 +9,8 @@
 #include <thread>
 #include <Windows.h>
 
+#define VC_EXTRALEAN
+
 auto update() -> void
 {
 	while (true)

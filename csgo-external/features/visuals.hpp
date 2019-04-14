@@ -18,6 +18,7 @@ class visuals : public singleton<visuals>
 		uint8_t pad_03[5];
 		int32_t	m_glow_style;
 	};
+
 public:
 	auto glow() -> void;
 	bool glow_enabled = true;
