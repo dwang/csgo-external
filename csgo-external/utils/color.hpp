@@ -19,3 +19,21 @@ struct color
 		a = alpha;
 	}
 };
+
+struct model_color
+{
+	unsigned char r;
+	unsigned char g;
+	unsigned char b;
+
+	model_color()
+	{
+	}
+
+	model_color(unsigned char red, unsigned char green, unsigned char blue)
+	{
+		r = red;
+		g = green;
+		b = blue;
+	}
+};

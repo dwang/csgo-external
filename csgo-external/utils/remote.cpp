@@ -163,6 +163,14 @@ namespace remote
 		NtWriteVirtualMemory(handle, reinterpret_cast<void*>(dest), const_cast<void*>(src), size, nullptr);
 	}
 
+	auto write_protected(const std::uintptr_t dest, const void* src, const std::size_t size) -> void
+	{
+		unsigned long old;
+		VirtualProtectEx(handle, reinterpret_cast<LPVOID>(dest), size, PAGE_EXECUTE_READWRITE, &old);
+		NtWriteVirtualMemory(handle, reinterpret_cast<void*>(dest), const_cast<void*>(src), size, nullptr);
+		VirtualProtectEx(handle, reinterpret_cast<LPVOID>(dest), size, old, nullptr);
+	}
+
 	auto read_data(void* dest, void* src, const std::size_t size) -> void
 	{
 		NtReadVirtualMemory(handle, src, dest, size, nullptr);

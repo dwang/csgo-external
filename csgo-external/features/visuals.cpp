@@ -25,7 +25,28 @@ auto visuals::glow() -> void
 		if (!object.m_ent || object.m_ent == local.get_pointer() || !entity.is_valid())
 			continue;
 
-		set_glow_clr(&object, entity.get_team() == local.get_team() ? color(0.17f, 0.67f, 0.8f, 0.7f) : color(1.0f, 0.35f, 0.70f, 0.7f), 0);
+		set_glow_clr(&object, entity.get_team() == local.get_team() ? color(0.17f, 0.67f, 0.8f, 0.7f) : color(1.0f, 0.35f, 0.70f, 0.7f), chams_enabled ? 1 : 0);
 		remote::write<glow_object_t>(obj_manager + entity.get_glow_index() * 0x38, object);
+	}
+}
+
+auto visuals::set_glow_update(bool update) -> void
+{
+	remote::write_protected<unsigned char>(offsets::get().client_dll.first + offsets::get().dwGlowUpdate, update ? 0x74 : 0xEB);
+}
+
+auto visuals::set_model_brightness(float brightness) -> void
+{
+	remote::write<int>(offsets::get().engine_dll.first + offsets::get().dwModelAmbientMin, *(int*)&brightness ^ (offsets::get().engine_dll.first + offsets::get().dwModelAmbientMin - 0x2c));
+}
+
+auto visuals::chams() -> void
+{
+	for (auto entity : entities)
+	{
+		if (entity.get_pointer() == local.get_pointer() || !entity.is_valid())
+			continue;
+
+		remote::write<model_color>(entity.get_pointer() + 0x70, entity.get_team() == local.get_team() ? model_color(43, 92, 204) : model_color(255, 43, 94));
 	}
 }

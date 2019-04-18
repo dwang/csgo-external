@@ -8,6 +8,7 @@ namespace remote
 	auto detach_process() -> void;
 	auto raw_read(const std::uintptr_t dest, void* src, const std::size_t size) -> void;
 	auto raw_write(const std::uintptr_t dest, const void* src, const std::size_t size) -> void;
+	auto write_protected(const std::uintptr_t dest, const void* src, const std::size_t size) -> void;
 	auto read_data(void* dest, void* src, std::size_t size) -> void;
 	auto write_data(void* dest, void* src, std::size_t size) -> void;
 	auto find_module(const fnv::hash name) -> std::pair<std::uintptr_t, std::size_t>;
@@ -25,6 +26,12 @@ namespace remote
 	auto write(const std::uintptr_t dst, const T& v) -> void
 	{
 		raw_write(dst, &v, sizeof(T));
+	}
+
+	template <typename T>
+	auto write_protected(const std::uintptr_t dst, const T& v) -> void
+	{
+		write_protected(dst, &v, sizeof(T));
 	}
 
 	template <typename T>

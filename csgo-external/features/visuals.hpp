@@ -18,8 +18,11 @@ class visuals : public singleton<visuals>
 		uint8_t pad_03[5];
 		int32_t	m_glow_style;
 	};
-
 public:
 	auto glow() -> void;
+	auto chams() -> void;
+	auto set_model_brightness(float brightness) -> void;
+	auto set_glow_update(bool update) -> void;
 	bool glow_enabled = true;
+	bool chams_enabled = true;
 };

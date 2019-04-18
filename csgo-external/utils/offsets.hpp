@@ -23,6 +23,8 @@ public:
 	std::uintptr_t dwGlowObjectManager;
 	std::uintptr_t dwEntityList;
 	std::uintptr_t dwGetAllClasses;
+	std::uintptr_t dwModelAmbientMin;
+	std::uintptr_t dwGlowUpdate;
 
 	std::uintptr_t m_iTeamNum;
 	std::uintptr_t m_fFlags;

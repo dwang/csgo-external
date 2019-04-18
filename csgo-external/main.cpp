@@ -36,16 +36,33 @@ auto update() -> void
 	}
 }
 
-auto visuals() -> void
+auto glow() -> void
 {
+	visuals::get().set_glow_update(false);
+
 	while (true)
 	{
-		if (engine::get().is_in_game() && engine::get().is_window_focused())
+		if (engine::get().is_in_game())
 		{
 			visuals::get().glow();
 		}
 
-		std::this_thread::sleep_for(std::chrono::milliseconds(1));
+		std::this_thread::sleep_for(std::chrono::seconds(5));
+	}
+}
+
+auto chams() -> void
+{
+	visuals::get().set_model_brightness(30.0f);
+
+	while (true)
+	{
+		if (engine::get().is_in_game() && engine::get().is_window_focused())
+		{
+			visuals::get().chams();
+		}
+
+		std::this_thread::sleep_for(std::chrono::milliseconds(100));
 	}
 }
 
@@ -86,14 +103,16 @@ auto main() -> int
 	std::cout << "> settings up threads" << std::endl << std::endl;
 
 	std::thread t_update(update);
-	std::thread t_visuals(visuals);
+	std::thread t_glow(glow);
+	std::thread t_chams(chams);
 	std::thread t_misc(misc);
 
 	t_update.detach();
-	t_visuals.detach();
+	t_glow.detach();
+	t_chams.detach();
 	t_misc.detach();
 
-	std::cout << "> success" << std::endl;	
+	std::cout << "> success" << std::endl;
 
 	while (true)
 	{
@@ -101,8 +120,18 @@ auto main() -> int
 
 		if (GetAsyncKeyState(VK_END) & 0x8000 || !FindWindow(NULL, "Counter-Strike: Global Offensive"))
 		{
+			visuals::get().set_glow_update(true);
+			visuals::get().set_model_brightness(0.0f);
+
+			t_update.~thread();
+			t_glow.~thread();
+			t_chams.~thread();
+			t_misc.~thread();
+
 			std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
 			remote::detach_process();
+
 			break;
 		}
 

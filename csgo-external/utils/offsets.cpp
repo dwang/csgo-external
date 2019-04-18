@@ -15,16 +15,18 @@ auto offsets::setup() -> void
 	client_dll = remote::find_module(FNV("client_panorama.dll"));
 	engine_dll = remote::find_module(FNV("engine.dll"));
 
-	dwClientState = find_ptr(engine_dll, "A1 ? ? ? ? 33 D2 6A 00 6A 00 33 C9 89 B0", 0x1, 0);
-	dwClientState_State = find_ptr(engine_dll, "83 B8 ? ? ? ? 06 0F 94 C0 C3", 0x2, 0, false);
-	dwClientState_GetLocalPlayer = find_ptr(engine_dll, "8B 80 ? ? ? ? 40 C3", 0x2, 0, false);
-	dwClientState_MaxPlayer = find_ptr(engine_dll, "A1 ? ? ? ? 8B 80 ? ? ? ? C3 CC CC CC CC 55 8B EC 8A 45 08", 0x7, 0, false);
-	m_bDormant = find_ptr(client_dll, "88 9E ? ? ? ? E8 ? ? ? ? 53 8D 8E ? ? ? ? E8 ? ? ? ? 8B 06 8B CE 53 FF 90 ? ? ? ? 8B 46 64 0F B6 CB 5E 5B 66 89 0C C5 ? ? ? ? 5D C2 04 00", 0x2, 0, false);
-	dwForceJump = find_ptr(client_dll, "89 0D ? ? ? ? 8B 0D ? ? ? ? 8B F2 8B C1 83 CE 08", 0x2, 0);
-	dwForceAttack = find_ptr(client_dll, "89 0D ? ? ? ? 8B 0D ? ? ? ? 8B F2 8B C1 83 CE 04", 0x2, 0);
-	dwGlowObjectManager = find_ptr(client_dll, "A1 ? ? ? ? A8 01 75 4B", 0x1, 0x4);
-	dwEntityList = find_ptr(client_dll, "BB ? ? ? ? 83 FF 01 0F 8C ? ? ? ? 3B F8", 0x1, 0);
-	dwGetAllClasses = find_ptr(client_dll, "A1 ? ? ? ? C3 CC CC CC CC CC CC CC CC CC CC A1 ? ? ? ? B9", 0x1, 0, false);
+	dwClientState = find_ptr(engine_dll, "A1 ? ? ? ? 33 D2 6A 00 6A 00 33 C9 89 B0", 1, 0);
+	dwClientState_State = find_ptr(engine_dll, "83 B8 ? ? ? ? 06 0F 94 C0 C3", 2, 0, false);
+	dwClientState_GetLocalPlayer = find_ptr(engine_dll, "8B 80 ? ? ? ? 40 C3", 2, 0, false);
+	dwClientState_MaxPlayer = find_ptr(engine_dll, "A1 ? ? ? ? 8B 80 ? ? ? ? C3 CC CC CC CC 55 8B EC 8A 45 08", 7, 0, false);
+	m_bDormant = find_ptr(client_dll, "8A 81 ? ? ? ? C3 32 C0", 2, 8, false);
+	dwForceJump = find_ptr(client_dll, "89 0D ? ? ? ? 8B 0D ? ? ? ? 8B F2 8B C1 83 CE 08", 2, 0);
+	dwForceAttack = find_ptr(client_dll, "89 0D ? ? ? ? 8B 0D ? ? ? ? 8B F2 8B C1 83 CE 04", 2, 0);
+	dwGlowObjectManager = find_ptr(client_dll, "A1 ? ? ? ? A8 01 75 4B", 1, 4);
+	dwEntityList = find_ptr(client_dll, "BB ? ? ? ? 83 FF 01 0F 8C ? ? ? ? 3B F8", 1, 0);
+	dwGetAllClasses = find_ptr(client_dll, "A1 ? ? ? ? C3 CC CC CC CC CC CC CC CC CC CC A1 ? ? ? ? B9", 1, 0, false);
+	dwModelAmbientMin = find_ptr(engine_dll, "F3 0F 10 0D ? ? ? ? F3 0F 11 4C 24 ? 8B 44 24 20 35 ? ? ? ? 89 44 24 0C", 4, 0);
+	dwGlowUpdate = remote::find_pattern(client_dll, "74 07 8B CB E8 ? ? ? ? 83 C7 10") - client_dll.first;
 
 	m_iTeamNum = netvar_manager::get_offset_by_hash_cached<FNV("CBaseEntity->m_iTeamNum")>();
 	m_fFlags = netvar_manager::get_offset_by_hash_cached<FNV("CBasePlayer->m_fFlags")>();
@@ -49,6 +51,8 @@ auto offsets::setup() -> void
 		"    dwForceAttack:                0x%x\n"
 		"    dwGetAllClasses:              0x%x\n"
 		"    m_iGlowIndex:                 0x%x\n"
+		"    dwModelAmbientMin:            0x%x\n"
+		"    dwGlowUpdate:                 0x%x\n"
 		"[*] netvars:\n"
 		"    CBaseEntity->m_iTeamNum:      0x%x\n"
 		"    CBasePlayer->m_fFlags:        0x%x\n"
@@ -68,6 +72,8 @@ auto offsets::setup() -> void
 		dwForceAttack,
 		dwGetAllClasses,
 		m_iGlowIndex,
+		dwModelAmbientMin,
+		dwGlowUpdate,
 		m_iTeamNum,
 		m_fFlags,
 		m_iHealth,
