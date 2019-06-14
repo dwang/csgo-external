@@ -28,7 +28,7 @@ namespace sdk
 	class RecvProp
 	{
 	public:
-		remote::variable<std::array<char, 64>>*	m_pVarName;
+		remote::variable<std::array<char, 64>> * m_pVarName;
 		SendPropType m_RecvType;
 		int	 m_Flags;
 		int m_StringBufferSize;
@@ -42,7 +42,7 @@ namespace sdk
 		int	m_Offset;
 		int	m_ElementStride;
 		int m_nElements;
-		remote::variable<std::array<char, 64>>*	m_pParentArrayPropName;
+		remote::variable<std::array<char, 64>> * m_pParentArrayPropName;
 	};
 
 	class RecvTable
@@ -51,7 +51,7 @@ namespace sdk
 		remote::variable<RecvProp>* m_pProps;
 		int	m_nProps;
 		void* m_pDecoder;
-		remote::variable<std::array<char, 64>>*	m_pNetTableName;
+		remote::variable<std::array<char, 64>> * m_pNetTableName;
 		bool m_bInitialized;
 		bool m_bInMainList;
 	};
@@ -61,7 +61,7 @@ namespace sdk
 	public:
 		CreateClientClassFn	m_pCreateFn;
 		CreateEventFn m_pCreateEventFn;
-		remote::variable<std::array<char, 64>>*	m_pNetworkName;
+		remote::variable<std::array<char, 64>> * m_pNetworkName;
 		remote::variable<RecvTable>* m_pRecvTable;
 		remote::variable<ClientClass>* m_pNext;
 		int m_ClassID;
@@ -81,15 +81,15 @@ netvar_manager::netvar_manager()
 	auto headclass = remote::read<remote::variable<sdk::ClientClass>*>(offsets::get().dwGetAllClasses);
 
 	IF_DUMPING(fopen_s(&s_fp, "netvar_dump.txt", "w");)
-	for (auto it = headclass; it; it = it->get().m_pNext)
-	{
-		auto clazz = it->get();
-		if (clazz.m_pRecvTable)
+		for (auto it = headclass; it; it = it->get().m_pNext)
 		{
-			auto net_name = clazz.m_pNetworkName->get();
-			dump_recursive(net_name.data(), clazz.m_pRecvTable, 0);
+			auto clazz = it->get();
+			if (clazz.m_pRecvTable)
+			{
+				auto net_name = clazz.m_pNetworkName->get();
+				dump_recursive(net_name.data(), clazz.m_pRecvTable, 0);
+			}
 		}
-	}
 	IF_DUMPING(fclose(s_fp);)
 }
 
@@ -127,7 +127,7 @@ auto netvar_manager::dump_recursive(const char* base_class, remote::variable<sdk
 
 		IF_DUMPING(fprintf(s_fp, "%s\t0x%04X\t%s\n", base_class, total_offset, var_name.data());)
 
-		m_props[hash] =
+			m_props[hash] =
 		{
 			prop_ptr,
 			total_offset

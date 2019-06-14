@@ -11,8 +11,8 @@ namespace remote
 	auto write_protected(const std::uintptr_t dest, const void* src, const std::size_t size) -> void;
 	auto read_data(void* dest, void* src, std::size_t size) -> void;
 	auto write_data(void* dest, void* src, std::size_t size) -> void;
-	auto find_module(const fnv::hash name) -> std::pair<std::uintptr_t, std::size_t>;
-	auto find_pattern(const std::pair<std::uintptr_t, std::size_t> mod, const char* pattern) -> std::uintptr_t;
+	auto find_module(const fnv::hash name)->std::pair<std::uintptr_t, std::size_t>;
+	auto find_pattern(const std::pair<std::uintptr_t, std::size_t> mod, const char* pattern)->std::uintptr_t;
 
 	template <typename T>
 	auto read(const std::uintptr_t src) -> T
@@ -63,7 +63,7 @@ namespace remote
 		auto set(const T& v) -> void { write(&remote_value, v); }
 
 		operator T() { return get(); }
-		auto operator =(const T& v) -> my_type& { set(v); return *this; }
+		auto operator =(const T& v) -> my_type & { set(v); return *this; }
 
 	private:
 		T remote_value;

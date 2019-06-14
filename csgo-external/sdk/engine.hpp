@@ -16,15 +16,16 @@ class engine : public singleton<engine>
 
 public:
 	auto update() -> void;
-	auto get_pointer() -> std::uintptr_t;
+	auto get_pointer()->std::uintptr_t;
 	auto get_local_player() -> int;
 	auto get_max_clients() -> int;
 	auto is_in_game() -> bool;
 	auto is_window_focused() -> bool;
 	auto set_window_focused(bool focused) -> void;
+	auto set_send_packet(bool status) -> void;
 };
 
 namespace entity
 {
-	auto get_client_entity(int index) -> entity_t;
+	auto get_client_entity(int index)->entity_t;
 }

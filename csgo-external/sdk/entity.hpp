@@ -2,7 +2,6 @@
 
 #include "../utils/netvar_manager.hpp"
 #include <cstdint>
-#include <vector>
 
 class entity_t
 {

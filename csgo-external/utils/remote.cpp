@@ -38,7 +38,7 @@ NTSTATUS NTAPI NtOpenProcess(
 	_Out_		PHANDLE				ProcessHandle,
 	_In_		ACCESS_MASK			DesiredAccess,
 	_In_		POBJECT_ATTRIBUTES	ObjectAttributes,
-	_In_opt_	CLIENT_ID*			ClientId
+	_In_opt_	CLIENT_ID* ClientId
 );
 
 typedef struct x_LDR_DATA_TABLE_ENTRY
@@ -68,12 +68,12 @@ typedef struct x_LDR_DATA_TABLE_ENTRY
 		ULONG TimeDateStamp;
 		PVOID LoadedImports;
 	};
-	_ACTIVATION_CONTEXT * EntryPointActivationContext;
+	_ACTIVATION_CONTEXT* EntryPointActivationContext;
 	PVOID PatchInformation;
 	LIST_ENTRY ForwarderLinks;
 	LIST_ENTRY ServiceTagLinks;
 	LIST_ENTRY StaticLinks;
-} xLDR_DATA_TABLE_ENTRY, *xPLDR_DATA_TABLE_ENTRY;
+} xLDR_DATA_TABLE_ENTRY, * xPLDR_DATA_TABLE_ENTRY;
 
 typedef struct x_PEB_LDR_DATA
 {
@@ -84,14 +84,14 @@ typedef struct x_PEB_LDR_DATA
 	LIST_ENTRY InMemoryOrderModuleList;
 	LIST_ENTRY InInitializationOrderModuleList;
 	PVOID EntryInProgress;
-} xPEB_LDR_DATA, *xPPEB_LDR_DATA;
+} xPEB_LDR_DATA, * xPPEB_LDR_DATA;
 
 namespace remote
 {
 	static auto handle = INVALID_HANDLE_VALUE;
 
 	__declspec(noinline)
-	static auto get_process_id(const fnv::hash name) -> HANDLE
+		static auto get_process_id(const fnv::hash name) -> HANDLE
 	{
 		auto len = ULONG(0);
 		NtQuerySystemInformation(SystemProcessInformation, nullptr, 0, &len);
@@ -252,13 +252,13 @@ namespace remote
 			image_name[image_name_astr.Length] = 0;
 			for (auto& c : image_name)
 				c = tolower(c);
-		
+
 			if (fnv::hash_runtime(image_name) == name)
 				return
-				{
-					std::uintptr_t(loader_module.DllBase),
-					std::size_t(loader_module.SizeOfImage)
-				};
+			{
+				std::uintptr_t(loader_module.DllBase),
+				std::size_t(loader_module.SizeOfImage)
+			};
 
 			current = loader_module.InLoadOrderLinks.Flink;
 		}

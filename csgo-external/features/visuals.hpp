@@ -23,6 +23,7 @@ public:
 	auto chams() -> void;
 	auto set_model_brightness(float brightness) -> void;
 	auto set_glow_update(bool update) -> void;
+	auto set_tonemap_scale(float amount) -> void;
 	bool glow_enabled = true;
 	bool chams_enabled = true;
 };

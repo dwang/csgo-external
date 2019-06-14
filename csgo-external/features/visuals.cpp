@@ -37,7 +37,12 @@ auto visuals::set_glow_update(bool update) -> void
 
 auto visuals::set_model_brightness(float brightness) -> void
 {
-	remote::write<int>(offsets::get().engine_dll.first + offsets::get().dwModelAmbientMin, *(int*)&brightness ^ (offsets::get().engine_dll.first + offsets::get().dwModelAmbientMin - 0x2c));
+	remote::write<int>(offsets::get().engine_dll.first + offsets::get().dwModelAmbientMin, *(int*)& brightness ^ (offsets::get().engine_dll.first + offsets::get().dwModelAmbientMin - 0x2c));
+}
+
+auto visuals::set_tonemap_scale(float amount) -> void
+{
+	//remote::write<int>(offsets::get().engine_dll.first + 0x589F1C, *(int*)&amount ^ (offsets::get().engine_dll.first + 0x589F1C - 0x2c));
 }
 
 auto visuals::chams() -> void

@@ -45,10 +45,14 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <OutDir>.\output\debug\</OutDir>
     <IntDir>.\intermediates\</IntDir>
+    <IncludePath>$(DXSDK_DIR)Include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(DXSDK_DIR)Lib\x86;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>.\output\release\</OutDir>
     <IntDir>.\intermediates\</IntDir>
+    <IncludePath>$(DXSDK_DIR)Include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(DXSDK_DIR)Lib\x86;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -77,6 +81,10 @@
   <ItemGroup>
     <ClInclude Include="features\misc.hpp" />
     <ClInclude Include="features\visuals.hpp" />
+    <ClInclude Include="menu\menu.hpp" />
+    <ClInclude Include="render\draw_manager.hpp" />
+    <ClInclude Include="render\renderer.hpp" />
+    <ClInclude Include="render\window.hpp" />
     <ClInclude Include="sdk\engine.hpp" />
     <ClInclude Include="sdk\entity.hpp" />
     <ClInclude Include="utils\color.hpp" />
@@ -91,6 +99,10 @@
     <ClCompile Include="features\misc.cpp" />
     <ClCompile Include="features\visuals.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="menu\menu.cpp" />
+    <ClCompile Include="render\draw_manager.cpp" />
+    <ClCompile Include="render\renderer.cpp" />
+    <ClCompile Include="render\window.cpp" />
     <ClCompile Include="sdk\engine.cpp" />
     <ClCompile Include="sdk\entity.cpp" />
     <ClCompile Include="utils\netvar_manager.cpp" />

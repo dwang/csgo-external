@@ -2,9 +2,13 @@
 #include "features/misc.hpp"
 #include "sdk/entity.hpp"
 #include "sdk/engine.hpp"
+#include "menu/menu.hpp"
 #include "utils/netvar_manager.hpp"
 #include "utils/offsets.hpp"
 #include "utils/remote.hpp"
+#include "render/draw_manager.hpp"
+#include "render/window.hpp"
+#include "render/renderer.hpp"
 #include <iostream>
 #include <thread>
 #include <Windows.h>
@@ -21,7 +25,7 @@ auto update() -> void
 
 			if (engine::get().is_in_game())
 			{
-				local = entity::get_client_entity(engine::get().get_local_player());
+				local = entity_t(entity::get_client_entity(engine::get().get_local_player()));
 				local.update();
 
 				for (int i = 0; i < engine::get().get_max_clients(); i++)
@@ -42,12 +46,15 @@ auto glow() -> void
 
 	while (true)
 	{
-		if (engine::get().is_in_game())
+		if (!visuals::get().glow_enabled)
+			continue;
+
+		if (engine::get().is_in_game() && engine::get().is_window_focused())
 		{
 			visuals::get().glow();
 		}
 
-		std::this_thread::sleep_for(std::chrono::seconds(5));
+		std::this_thread::sleep_for(std::chrono::seconds(1));
 	}
 }
 
@@ -57,6 +64,9 @@ auto chams() -> void
 
 	while (true)
 	{
+		if (!visuals::get().chams_enabled)
+			continue;
+
 		if (engine::get().is_in_game() && engine::get().is_window_focused())
 		{
 			visuals::get().chams();
@@ -68,8 +78,13 @@ auto chams() -> void
 
 auto misc() -> void
 {
+	visuals::get().set_tonemap_scale(0.5);
+
 	while (true)
 	{
+		if (!misc::get().bunnyhop_enabled)
+			continue;
+
 		if (engine::get().is_in_game() && engine::get().is_window_focused())
 		{
 			if (local.is_alive())
@@ -80,13 +95,26 @@ auto misc() -> void
 	}
 }
 
+auto render() -> void
+{
+	window::get().initialize();
+
+	while (true)
+	{
+		window::get().handle_messages();
+
+		std::this_thread::sleep_for(std::chrono::milliseconds(16));
+	}
+}
+
 auto main() -> int
 {
 	std::cout << "csgo-external - " __DATE__ << std::endl << std::endl;
 
 	std::cout << "> waiting for \"csgo.exe\"" << std::endl << std::endl;
 
-	while (!FindWindow(0, "Counter-Strike: Global Offensive"))
+	while (!window::get().window_hwnd)
+		window::get().window_hwnd = FindWindow(0, "Counter-Strike: Global Offensive");
 		std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
 	remote::attach_process(FNV("csgo.exe"));
@@ -99,6 +127,11 @@ auto main() -> int
 	std::cout << "> scanning signatures" << std::endl << std::endl;
 
 	offsets::get().setup();
+
+	std::cout << "> setting up overlay" << std::endl << std::endl;
+
+	std::thread t_render(render);
+	t_render.detach();
 
 	std::cout << "> settings up threads" << std::endl << std::endl;
 
@@ -114,14 +147,43 @@ auto main() -> int
 
 	std::cout << "> success" << std::endl;
 
+	std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+
+	menu::get().update();
+
 	while (true)
 	{
-		engine::get().set_window_focused(FindWindow(NULL, "Counter-Strike: Global Offensive") == GetForegroundWindow());
+		engine::get().set_window_focused(window::get().window_hwnd == GetForegroundWindow());
+
+		if (GetAsyncKeyState(VK_F1) & 0x8000)
+		{
+			visuals::get().glow_enabled = !visuals::get().glow_enabled;
+			menu::get().update();
+			Beep(330, 100);
+			std::this_thread::sleep_for(std::chrono::milliseconds(100));
+		}
+
+		if (GetAsyncKeyState(VK_F2) & 0x8000)
+		{
+			visuals::get().chams_enabled = !visuals::get().chams_enabled;
+			menu::get().update();
+			Beep(330, 100);
+			std::this_thread::sleep_for(std::chrono::milliseconds(100));
+		}
+
+		if (GetAsyncKeyState(VK_F3) & 0x8000)
+		{
+			misc::get().bunnyhop_enabled = !misc::get().bunnyhop_enabled;
+			menu::get().update();
+			Beep(330, 100);
+			std::this_thread::sleep_for(std::chrono::milliseconds(100));
+		}
 
 		if (GetAsyncKeyState(VK_END) & 0x8000 || !FindWindow(NULL, "Counter-Strike: Global Offensive"))
 		{
 			visuals::get().set_glow_update(true);
 			visuals::get().set_model_brightness(0.0f);
+			visuals::get().set_tonemap_scale(1.0);
 
 			t_update.~thread();
 			t_glow.~thread();
