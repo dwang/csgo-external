@@ -14,6 +14,7 @@ class entity_t
 	int team;
 	int flags;
 	bool dormant;
+	int crosshair_id;
 
 public:
 	auto update() -> void;
@@ -26,6 +27,7 @@ public:
 	auto is_alive() -> bool;
 	auto is_dormant() -> bool;
 	auto is_valid() -> bool;
+	auto get_crosshair_id() -> int;
 };
 
 extern entity_t local;

@@ -4,7 +4,8 @@ void draw_manager::initialize(IDirect3DDevice9* device)
 {
 	this->device = device;
 
-	D3DXCreateFontA(this->device, 18, 0, FW_LIGHT, 1, 0, ANSI_CHARSET, OUT_DEFAULT_PRECIS, CLEARTYPE_QUALITY | ANTIALIASED_QUALITY, DEFAULT_PITCH, "Verdana", &this->fonts.fnormal);
+	D3DXCreateFontA(this->device, 18, 0, FW_LIGHT, 1, 0, ANSI_CHARSET, OUT_DEFAULT_PRECIS, CLEARTYPE_QUALITY | ANTIALIASED_QUALITY, DEFAULT_PITCH, "Tahoma", &this->fonts.fnormal);
+	D3DXCreateFontA(this->device, 25, 0, FW_BOLD, 1, 0, ANSI_CHARSET, OUT_DEFAULT_PRECIS, CLEARTYPE_QUALITY | ANTIALIASED_QUALITY, DEFAULT_PITCH, "Tahoma", &this->fonts.fmenu);
 }
 
 void draw_manager::reset(IDirect3DDevice9* _device)

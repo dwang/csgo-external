@@ -60,6 +60,9 @@
     <ClInclude Include="render\window.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="features\aim.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="utils\remote.cpp">
@@ -96,6 +99,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="render\window.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="features\aim.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

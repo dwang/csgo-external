@@ -21,6 +21,7 @@ auto entity_t::update() -> void
 	team = *reinterpret_cast<int*>(chunk + offsets::get().m_iTeamNum);
 	flags = *reinterpret_cast<int*>(chunk + offsets::get().m_fFlags);
 	dormant = *reinterpret_cast<bool*>(chunk + offsets::get().m_bDormant);
+	crosshair_id = *reinterpret_cast<int*>(chunk + offsets::get().m_iCrosshairID);
 }
 
 auto entity_t::get_pointer() -> std::uintptr_t
@@ -69,4 +70,9 @@ auto entity_t::is_dormant() -> bool
 auto entity_t::is_valid() -> bool
 {
 	return base && is_alive() && !is_dormant();
+}
+
+auto entity_t::get_crosshair_id() -> int
+{
+	return crosshair_id;
 }

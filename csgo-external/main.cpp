@@ -1,3 +1,4 @@
+#include "features/aim.hpp"
 #include "features/visuals.hpp"
 #include "features/misc.hpp"
 #include "sdk/entity.hpp"
@@ -40,6 +41,23 @@ auto update() -> void
 	}
 }
 
+auto aim() -> void
+{
+	while (true)
+	{
+		if (!aim::get().triggerbot_enabled)
+			continue;
+
+		if (engine::get().is_in_game() && engine::get().is_window_focused())
+		{
+			if (local.is_alive())
+				aim::get().triggerbot();
+		}
+
+		std::this_thread::sleep_for(std::chrono::milliseconds(1));
+	}
+}
+
 auto glow() -> void
 {
 	visuals::get().set_glow_update(false);
@@ -78,7 +96,7 @@ auto chams() -> void
 
 auto misc() -> void
 {
-	visuals::get().set_tonemap_scale(0.5);
+	visuals::get().set_tonemap_scale(0.3);
 
 	while (true)
 	{
@@ -130,17 +148,21 @@ auto main() -> int
 
 	std::cout << "> setting up overlay" << std::endl << std::endl;
 
+	menu::get().initialize();
+
 	std::thread t_render(render);
 	t_render.detach();
 
 	std::cout << "> settings up threads" << std::endl << std::endl;
 
 	std::thread t_update(update);
+	//std::thread t_aim(aim);
 	std::thread t_glow(glow);
 	std::thread t_chams(chams);
 	std::thread t_misc(misc);
 
 	t_update.detach();
+	//t_aim.detach();
 	t_glow.detach();
 	t_chams.detach();
 	t_misc.detach();
@@ -149,33 +171,36 @@ auto main() -> int
 
 	std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 
-	menu::get().update();
-
 	while (true)
 	{
 		engine::get().set_window_focused(window::get().window_hwnd == GetForegroundWindow());
 
-		if (GetAsyncKeyState(VK_F1) & 0x8000)
+		if (GetAsyncKeyState(VK_UP) & 0x8000)
 		{
-			visuals::get().glow_enabled = !visuals::get().glow_enabled;
-			menu::get().update();
-			Beep(330, 100);
+			--menu::get().selected;
+			std::this_thread::sleep_for(std::chrono::milliseconds(100));
+		}
+		else if (GetAsyncKeyState(VK_DOWN) & 0x8000)
+		{
+			++menu::get().selected;
 			std::this_thread::sleep_for(std::chrono::milliseconds(100));
 		}
 
-		if (GetAsyncKeyState(VK_F2) & 0x8000)
+		if (menu::get().selected == -1)
+			menu::get().selected = menu::get().items.size() - 1;
+		
+		if (menu::get().selected > menu::get().items.size() - 1)
+			menu::get().selected = 0;
+
+		if (GetAsyncKeyState(VK_LEFT) & 0x8000 || GetAsyncKeyState(VK_RIGHT) & 0x8000)
 		{
-			visuals::get().chams_enabled = !visuals::get().chams_enabled;
-			menu::get().update();
-			Beep(330, 100);
+			*menu::get().items[menu::get().selected].container = !*menu::get().items[menu::get().selected].container;
 			std::this_thread::sleep_for(std::chrono::milliseconds(100));
 		}
 
-		if (GetAsyncKeyState(VK_F3) & 0x8000)
+		if (GetAsyncKeyState(VK_INSERT) & 0x8000)
 		{
-			misc::get().bunnyhop_enabled = !misc::get().bunnyhop_enabled;
-			menu::get().update();
-			Beep(330, 100);
+			menu::get().opened = !menu::get().opened;
 			std::this_thread::sleep_for(std::chrono::milliseconds(100));
 		}
 

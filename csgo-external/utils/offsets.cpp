@@ -33,6 +33,8 @@ auto offsets::setup() -> void
 	m_iHealth = netvar_manager::get_offset_by_hash_cached<FNV("CBasePlayer->m_iHealth")>();
 	m_flFlashDuration = netvar_manager::get_offset_by_hash_cached<FNV("CCSPlayer->m_flFlashDuration")>();
 	m_iGlowIndex = m_flFlashDuration + 24;
+	m_bHasDefuser = netvar_manager::get_offset_by_hash_cached<FNV("CCSPlayer->m_bHasDefuser")>();
+	m_iCrosshairID = m_bHasDefuser + 92;
 
 #ifdef _DEBUG
 	printf(
@@ -57,7 +59,9 @@ auto offsets::setup() -> void
 		"    CBaseEntity->m_iTeamNum:      0x%x\n"
 		"    CBasePlayer->m_fFlags:        0x%x\n"
 		"    CBasePlayer->m_iHealth:       0x%x\n"
-		"    CCSPlayer->m_flFlashDuration: 0x%x\n\n"
+		"    CCSPlayer->m_flFlashDuration: 0x%x\n"
+		"    CCSPlayer->m_bHasDefuser:     0x%x\n"
+		"    CCSPlayer->m_iCrosshairID:    0x%x\n\n"
 		,
 		client_dll.first,
 		engine_dll.first,
@@ -77,7 +81,9 @@ auto offsets::setup() -> void
 		m_iTeamNum,
 		m_fFlags,
 		m_iHealth,
-		m_flFlashDuration
+		m_flFlashDuration,
+		m_bHasDefuser,
+		m_iCrosshairID
 	);
 #endif
 }

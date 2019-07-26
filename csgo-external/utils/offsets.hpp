@@ -31,4 +31,6 @@ public:
 	std::uintptr_t m_iHealth;
 	std::uintptr_t m_flFlashDuration;
 	std::uintptr_t m_iGlowIndex;
+	std::uintptr_t m_iCrosshairID;
+	std::uintptr_t m_bHasDefuser;
 };

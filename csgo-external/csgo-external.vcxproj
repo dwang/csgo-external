@@ -79,6 +79,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="features\aim.hpp" />
     <ClInclude Include="features\misc.hpp" />
     <ClInclude Include="features\visuals.hpp" />
     <ClInclude Include="menu\menu.hpp" />
@@ -96,6 +97,7 @@
     <ClInclude Include="utils\singleton.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="features\aim.cpp" />
     <ClCompile Include="features\misc.cpp" />
     <ClCompile Include="features\visuals.cpp" />
     <ClCompile Include="main.cpp" />

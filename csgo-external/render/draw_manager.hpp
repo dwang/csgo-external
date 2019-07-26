@@ -67,6 +67,7 @@ public:
 	struct font_t
 	{
 		ID3DXFont* fnormal;
+		ID3DXFont* fmenu;
 	};
 
 	font_t fonts;

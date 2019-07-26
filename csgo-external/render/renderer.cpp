@@ -4,6 +4,7 @@
 #include "renderer.hpp"
 #include "draw_manager.hpp"
 #include "window.hpp"
+#include "..//menu/menu.hpp"
 #include "../sdk/engine.hpp"
 
 void renderer::init()
@@ -67,7 +68,7 @@ void renderer::render()
 
 	if (engine::get().is_window_focused())
 	{
-		draw_manager::get().string(5, 0, FONT_LEFT, draw_manager::get().fonts.fnormal, false, WHITE(255), "csgo-external");
+		menu::get().render();
 	}
 
 	d3d_device->EndScene();

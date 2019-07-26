@@ -22,7 +22,6 @@ public:
 	auto is_in_game() -> bool;
 	auto is_window_focused() -> bool;
 	auto set_window_focused(bool focused) -> void;
-	auto set_send_packet(bool status) -> void;
 };
 
 namespace entity

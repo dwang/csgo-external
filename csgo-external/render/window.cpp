@@ -1,5 +1,6 @@
 #include "window.hpp"
 #include "renderer.hpp"
+#include "../menu/menu.hpp"
 #include <d3d9.h>
 #include <d3dx9.h>
 #include <dwmapi.h>
